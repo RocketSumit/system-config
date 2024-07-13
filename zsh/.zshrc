@@ -84,7 +84,9 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(git git-flow colored-man-pages zsh-syntax-highlighting zsh-autosuggestions pip python vi-mode colorize autojump tmux docker web-search sudo history zsh-history-substring-search)
 
-ZSH_TMUX_AUTOSTART="true"
+if [[ "$TERM_PROGRAM" != "vscode" ]]; then
+  ZSH_TMUX_AUTOSTART="true"
+fi
 
 source $ZSH/oh-my-zsh.sh
 
@@ -139,14 +141,14 @@ alias 9='cd -9'
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/Users/sumit/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+__conda_setup="$('$HOME/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
 if [ $? -eq 0 ]; then
     eval "$__conda_setup"
 else
-    if [ -f "/Users/sumit/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "/Users/sumit/miniconda3/etc/profile.d/conda.sh"
+    if [ -f "$HOME/miniconda3/etc/profile.d/conda.sh" ]; then
+        . "$HOME/miniconda3/etc/profile.d/conda.sh"
     else
-        export PATH="/Users/sumit/miniconda3/bin:$PATH"
+        export PATH="$HOME/miniconda3/bin:$PATH"
     fi
 fi
 unset __conda_setup
@@ -173,8 +175,18 @@ preexec() { echo -ne '\e[5 q' ;} # Use beam shape cursor for each new prompt.
 
 # convert video function
 compress_video(){
-  crf="${3:-28}"
-  ffmpeg -i "$1" -vcodec libx264 -crf $crf "$2"
+  crf="${2:-28}"
+  input_file="$1"
+  output_file="${input_file%.*}_comp.${input_file##*.}"
+  ffmpeg -i "$input_file" -vcodec libx264 -crf $crf "$output_file"
+}
+
+
+combine_videos(){
+  file_name="$1"
+  ls | grep -v 'filelist.txt' | awk '{print "file "$0""}' > filelist.txt
+  ffmpeg -f concat -safe 0 -i filelist.txt -c copy -an "$file_name"
+  rm filelist.txt
 }
 
 # Substring history search
