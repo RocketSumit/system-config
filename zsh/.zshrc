@@ -127,6 +127,8 @@ fi
 alias zshconfig="vim ~/.zshrc"
 alias sauce="source ~/.zshrc"
 alias close="tmux kill-server"
+alias ld='lazydocker'
+alias lg='lazygit'
 alias t="tree -L" 
 alias d='dirs -v | head -10'
 alias 1='cd -'
