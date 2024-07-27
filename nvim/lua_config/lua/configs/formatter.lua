@@ -6,7 +6,7 @@ require("formatter").setup {
   -- Enable or disable logging
   logging = true,
   -- Set the log level
-  log_level = vim.log.levels.WARN,
+  log_level = vim.log.levels.DEBUG,
   -- All formatter configurations are opt-in
   filetype = {
     -- Formatter configurations for filetype "lua" go here
@@ -36,28 +36,26 @@ require("formatter").setup {
           },
           stdin = true,
         }
-      end
+      end,
     },
 
     python = {
 
       require("formatter.filetypes.python").black,
-      function ()
-        local util = require("formatter.util")
+      function()
         return {
           exe = "black",
           args = { "-q", "--stdin-filename", util.escape_path(util.get_current_buffer_file_name()), "-" },
           stdin = true,
         }
-      end
+      end,
     },
-
     -- Use the special "*" filetype for defining formatter configurations on
     -- any filetype
     ["*"] = {
       -- "formatter.filetypes.any" defines default configurations for any
       -- filetype
-      require("formatter.filetypes.any").remove_trailing_whitespace
-    }
-  }
+      require("formatter.filetypes.any").remove_trailing_whitespace,
+    },
+  },
 }
