@@ -12,6 +12,16 @@ return {
     tag = "v3.0.1",
     lazy = false,
     config = function()
+
+      -- Disable default mappings
+      vim.g.EasyMotion_do_mapping = 0
+
+      -- Turn on case-insensitive feature
+      vim.g.EasyMotion_smartcase = 1
+      vim.g.EasyMotion_use_upper=1
+      vim.g.EasyMotion_keys='SADFJKLEWCMPGH'
+      vim.g.EasyMotion_use_smartsign_us=1
+
       -- <Leader>f{char} to move to {char}
       -- vim.api.nvim_set_keymap("n", "<Leader>f", "<Plug>(easymotion-bd-f)", {})
       -- vim.api.nvim_set_keymap("n", "<Leader>f", "<Plug>(easymotion-overwin-f)", {})
@@ -23,19 +33,15 @@ return {
       -- vim.api.nvim_set_keymap("n", "<Leader>L", "<Plug>(easymotion-bd-jk)", {})
       -- vim.api.nvim_set_keymap("n", "<Leader>L", "<Plug>(easymotion-overwin-line)", {})
       --
-      -- -- Move to word
-      -- vim.api.nvim_set_keymap("n", "<Leader>w", "<Plug>(easymotion-bd-w)", {})
+      -- Move to word
+      vim.api.nvim_set_keymap("n", "f", "<Plug>(easymotion-bd-w)", {})
       -- vim.api.nvim_set_keymap("n", "<Leader>w", "<Plug>(easymotion-overwin-w)", {})
 
-      -- Disable default mappings
-      vim.g.EasyMotion_do_mapping = 0
 
       -- `s{char}{char}{label}`
       -- Need one more keystroke, but on average, it may be more comfortable.
       vim.api.nvim_set_keymap('n', 's', '<Plug>(easymotion-overwin-f2)', {})
 
-      -- Turn on case-insensitive feature
-      vim.g.EasyMotion_smartcase = 1
 
       -- JK motions: Line motions
       vim.api.nvim_set_keymap('n', '<Leader>j', '<Plug>(easymotion-j)', {})
