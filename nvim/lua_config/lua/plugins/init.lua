@@ -164,4 +164,10 @@ return {
       vim.g.lazygit_config_file_path = {} -- table of custom config file paths
     end,
   },
+  {'https://codeberg.org/esensar/nvim-dev-container',
+    dependencies = 'nvim-treesitter/nvim-treesitter',
+    config = function ()
+      require("devcontainer").setup{}
+    end
+  },
 }
