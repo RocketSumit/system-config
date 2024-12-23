@@ -1,3 +1,10 @@
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
@@ -13,7 +20,7 @@ fi
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="robbyrussell"
+ZSH_THEME="powerlevel10k/powerlevel10k"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -167,10 +174,11 @@ preexec() { echo -ne '\e[5 q' ;} # Use beam shape cursor for each new prompt.
 
 # convert video function
 compress_video(){
-  crf="${2:-28}"
   input_file="$1"
+  crf="${2:-28}"
+  speed="${3:-1}"
   output_file="${input_file%.*}_comp.${input_file##*.}"
-  ffmpeg -i "$input_file" -vcodec libx264 -crf $crf "$output_file"
+  ffmpeg -i "$input_file" -vf "setpts=PTS/${speed},drawtext=text='${speed}x':x=10:y=10:fontsize=24:fontcolor=white" -vcodec libx264 -crf $crf -an "$output_file"
 }
 
 
@@ -181,8 +189,41 @@ combine_videos(){
   rm filelist.txt
 }
 
+compress_pdf() {
+    if [ -z "$1" ]; then
+        echo "Usage: compress_pdf <input_file>"
+        return 1
+    fi
+
+    input_file="$1"
+    if [ ! -f "$input_file" ]; then
+        echo "Error: File '$input_file' does not exist."
+        return 1
+    fi
+
+    # Rename the input file with "org" suffix
+    org_file="${input_file%.*}-org.pdf"
+    mv "$input_file" "$org_file"
+
+    # Compress the file to printer quality
+    gs -sDEVICE=pdfwrite \
+       -dCompatibilityLevel=1.4 \
+       -dPDFSETTINGS=/printer \
+       -dNOPAUSE -dQUIET -dBATCH \
+       -sOutputFile="$input_file" "$org_file"
+
+    if [ $? -eq 0 ]; then
+        echo "Compression successful. Original file saved as '$org_file'."
+    else
+        echo "Error: Compression failed."
+        mv "$org_file" "$input_file"  # Restore original file in case of failure
+    fi
+}
+
 # Substring history search
 bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
 bindkey -M vicmd 'k' history-substring-search-up
 bindkey -M vicmd 'j' history-substring-search-down
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
